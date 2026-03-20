@@ -1,31 +1,46 @@
 version: '3.8'
 
 services:
-  # Наша база данных
   db:
     image: postgres:latest
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
 
-  # Наше приложение
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+  # Запускаем три одинаковых приложения, но с разными именами
+  app1:
+    build: .
     environment:
-      # Передаем переменные из .env в строку подключения к БД. Прямой передачи нет!
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - NODE_NAME=Нода 1
+      - ConnectionStrings__DefaultConnection=Host=db;Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}
     depends_on:
       - db
-    healthcheck:
-      # Docker будет раз в 30 секунд дергать нашу ссылку /health, которую мы добавили в Program.cs
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
+  app2:
+    build: .
+    environment:
+      - NODE_NAME=Нода 2
+      - ConnectionStrings__DefaultConnection=Host=db;Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}
+    depends_on:
+      - db
+
+  app3:
+    build: .
+    environment:
+      - NODE_NAME=Нода 3
+      - ConnectionStrings__DefaultConnection=Host=db;Username=${DB_USER};Password=${DB_PASSWORD};Database=${DB_NAME}
+    depends_on:
+      - db
+
+  # Наш балансировщик Nginx
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80" # Теперь заходим просто по http://localhost
+    depends_on:
+      - app1
+      - app2
+      - app3
