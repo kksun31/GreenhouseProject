@@ -17,7 +17,7 @@ namespace GreenhouseApi.Controllers
         }
 
 
-        // 1.1 READ: Получить одно конкретное растение по ID
+        //READ
         [HttpGet("{id}")]
         public async Task<ActionResult<Plant>> GetPlant(int id)
         {
@@ -26,7 +26,7 @@ namespace GreenhouseApi.Controllers
             return plant;
         }
 
-        // 2. CREATE: Добавить новое растение
+        //CREATE
         [HttpPost]
         public async Task<ActionResult<Plant>> PostPlant(Plant plant)
         {
@@ -35,7 +35,7 @@ namespace GreenhouseApi.Controllers
             return CreatedAtAction(nameof(GetPlant), new { id = plant.Id }, plant);
         }
 
-        // 3. UPDATE: Изменить данные растения
+        //UPDATE
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlant(int id, Plant plant)
         {
@@ -47,7 +47,7 @@ namespace GreenhouseApi.Controllers
             return NoContent();
         }
 
-        // 4. DELETE: Удалить растение из базы
+        //DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlant(int id)
         {
