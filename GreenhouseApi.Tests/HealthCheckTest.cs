@@ -23,6 +23,6 @@ public class HealthCheckTest : IClassFixture<WebApplicationFactory<Program>>
 
         // Assert: Проверяем, что всё прошло успешно и сервер ответил "Healthy"
         response.EnsureSuccessStatusCode();
-        Assert.Equal("Healthy", responseString);
+        Assert.Equal("palka", responseString);
     }
 }
